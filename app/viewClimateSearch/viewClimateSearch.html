@@ -1,0 +1,147 @@
+<div class="container">
+    <h2>World Bank Climate Analytics</h2>
+    <p>Select search parameters for one or more countries. Use Temperature or Pariticipation to retrieve data.</p>
+    <div class="panel-group">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div>
+                    <p class="panel-title text-center">Climate Data Search Criteria
+                        <a class="btn btn-warning btn-xs collapsed pull-right" data-target="#collapseSearchParams" ng-click="onClick()" data-toggle="collapse" aria-expanded="false"><i class="fa fa-angle-down"></i></a>
+                </div>
+            </div>
+            <div id="collapseSearchParams" class="panel-collapse collapse in">
+                <div class="panel-body"> 
+                    <div class="row">
+                         <label for="startYearSelector">Select "from" year:</label> 
+
+                        <am-multiselect id="startYearSelector" class="input-lg"
+                                        ng-model="fromYear"
+                                        options="c.name for c in fromYears"
+                                        ng-change="selectedFromYear()" ></am-multiselect>            
+
+                        <label for="endYearSelector">Select "to" year:</label>        
+                        <am-multiselect id="endYearSelector" class="input-lg"
+                                        ng-model="toYear"
+                                        options="c.name for c in toYears"
+                                        ng-change="selectedToYear()" ></am-multiselect>            
+                    </div>     
+                    <div  class="row">
+                        <label for="typeSelector">Select type:</label>        
+                        <am-multiselect id="typeSelector" class="input-lg"
+                                        ng-model="selectedType"
+                                        options="c.id as c.name for c in types"
+                                        ng-change="selected()" ></am-multiselect>            
+                    </div>
+                    <div  class="row">            
+                        <label for="countrySelector">Select one or more countries:</label>        
+                        <am-multiselect id="countrySelector" class="input-lg" multiple="true" ms-selected ="There are {{selectedCountry.length}} country(s) selected"
+                                        ng-model="selectedCountry" ms-header="World Countries"
+                                        options="c.id as c.name for c in countries"
+                                        ng-change="selected()">                            
+                        </am-multiselect>{{selectedCountry}}        
+                    </div>
+                    <button class="btn btn-warning" ng-click="submitForTemperature()">Get Temperature Data</button>
+                    <button class="btn btn-primary" ng-click="submitForPrecipitation()">Get Precipitation Data</button>
+                    <button class="btn btn-danger" ng-click="submitForBoth()">Get Both Data Samples</button>
+
+                </div>
+            </div>
+        </div>    
+        <div ng-show="showData">
+            <div ng-show="showTas" class="panel panel-default">
+                <div class="panel-heading">
+                    <div>
+                        <p class="panel-title text-center">Temperature Data. For monthly select some rows and press chart button for a graphical compare and charts. For Annuals - no selection needed.
+                            <a class="btn btn-warning btn-xs collapsed pull-right" data-target="#collapseTas" data-toggle="collapse" aria-expanded="false"><i class="fa fa-angle-down"></i></a>
+                            <a class="btn btn-warning btn-xs pull-right" ng-click="onClickCompareTas()"><i class="fa fa-bar-chart"></i></a>                            
+                    </div>
+                </div>
+                <div id="collapseTas" class="panel-collapse collapse in">
+                    <div class="panel-body"> 
+                        <table tr-ng-grid id="idTasMonthlyGrid" selected-items="selectedItemsTasMonthly" selection-mode="MultiRow" enable-multi-row-selections="true" enable-selections="true" page-items="10" ng-show="selectedType === 'mavg' || selectedType === 'manom'" items="dataItemsMonthlyTas">
+                            <thead>
+                                <tr>
+                                    <th field-name="Country" data-display-name="Country" data-enable-filtering="true" data-enable-sorting="true"/> 
+                                    <th field-name="Year" data-display-name="Year" data-enable-filtering="true" data-enable-sorting="true"/>
+                                    <th field-name="Jan" display-format="number:2" data-display-name="Jan" data-enable-filtering="false"/>
+                                    <th field-name="Feb" display-format="number:2" data-display-name="Feb" data-enable-filtering="false"/>
+                                    <th field-name="Mar" display-format="number:2" data-display-name="Mar" data-enable-filtering="false"/>
+                                    <th field-name="Apr" display-format="number:2" data-display-name="Apr" data-enable-filtering="false"/>
+                                    <th field-name="May" display-format="number:2" data-display-name="May" data-enable-filtering="false"/>
+                                    <th field-name="Jun" display-format="number:2" data-display-name="Jun" data-enable-filtering="false"/>
+                                    <th field-name="Jul" display-format="number:2" data-display-name="Jul" data-enable-filtering="false"/>
+                                    <th field-name="Aug" display-format="number:2" data-display-name="Aug" data-enable-filtering="false"/>
+                                    <th field-name="Sep" display-format="number:2" data-display-name="Sep" data-enable-filtering="false"/>
+                                    <th field-name="Nov" display-format="number:2" data-display-name="Nov" data-enable-filtering="false"/>
+                                    <th field-name="Dec" display-format="number:2" data-display-name="Dec" data-enable-filtering="false"/>                            
+                                </tr>
+                            </thead>
+                        </table>
+                        <table tr-ng-grid id="idTasAnnualGrid" page-items="10" ng-show="selectedType === 'annualavg' || selectedType === 'annaulanom'" items="dataItemsAnnualTas"></table>
+                    </div>
+                </div>
+            </div>    
+            <div ng-show="showPr" class="panel panel-default">
+                <div class="panel-heading">
+                    <div>
+                        <p class="panel-title text-center">Precipitation Data. For monthly select some rows and press chart button for a graphical compare and charts. For Annuals - no selection needed. 
+                            <a class="btn btn-warning btn-xs collapsed pull-right" data-target="#collapsePr" ng-click="onClick()" data-toggle="collapse" aria-expanded="false"><i class="fa fa-angle-down"></i></a>
+                            <a class="btn btn-warning btn-xs pull-right" ng-click="onClickComparePr()"><i class="fa fa-bar-chart"></i></a>
+                    </div>
+                </div>
+                <div id="collapsePr" class="panel-collapse collapse in">
+                    <div class="panel-body"> 
+                        <table tr-ng-grid selection-mode="MultiRow" selected-items="selectedItemsPrMonthly" enable-multi-row-selections="true" enable-selections="true" page-items="10" ng-show="selectedType === 'mavg' || selectedType === 'manom'" items="dataItemsMonthlyPr">
+                            <thead>
+                                <tr>
+                                    <th field-name="Country" data-display-name="Country" data-enable-filtering="true" data-enable-sorting="true"/> 
+                                    <th field-name="Year" data-display-name="Year" data-enable-filtering="true" data-enable-sorting="true"/>
+                                    <th field-name="Jan" display-format="number:2" data-display-name="Jan" data-enable-filtering="false"/>
+                                    <th field-name="Feb" display-format="number:2" data-display-name="Feb" data-enable-filtering="false"/>
+                                    <th field-name="Mar" display-format="number:2" data-display-name="Mar" data-enable-filtering="false"/>
+                                    <th field-name="Apr" display-format="number:2" data-display-name="Apr" data-enable-filtering="false"/>
+                                    <th field-name="May" display-format="number:2" data-display-name="May" data-enable-filtering="false"/>
+                                    <th field-name="Jun" display-format="number:2" data-display-name="Jun" data-enable-filtering="false"/>
+                                    <th field-name="Jul" display-format="number:2" data-display-name="Jul" data-enable-filtering="false"/>
+                                    <th field-name="Aug" display-format="number:2" data-display-name="Aug" data-enable-filtering="false"/>
+                                    <th field-name="Sep" display-format="number:2" data-display-name="Sep" data-enable-filtering="false"/>
+                                    <th field-name="Nov" display-format="number:2" data-display-name="Nov" data-enable-filtering="false"/>
+                                    <th field-name="Dec" display-format="number:2" data-display-name="Dec" data-enable-filtering="false"/>                            
+                                </tr>
+                            </thead>
+                        </table>
+                        <table tr-ng-grid selection-mode="MultiRow" page-items="10" ng-show="selectedType === 'annualavg' || selectedType === 'annaulanom'" items="dataItemsAnnualPr"></table>
+                    </div>    
+                </div>
+            </div>
+            <div ng-show="showCharts" class="panel panel-default">
+                <div class="panel-heading">
+                    <div>
+                        <p class="panel-title text-center">Chart(s)
+                            <a class="btn btn-warning btn-xs collapsed pull-right" data-target="#collapseChart" ng-click="onClick()" data-toggle="collapse" aria-expanded="false"><i class="fa fa-angle-down"></i></a>                            
+                    </div>
+                </div>
+                <div id="collapseChart" class="panel-collapse collapse in">
+                    <div class="panel-body">                         
+                        <div class="row">                            
+                            <div ng-show="showTas" class="col-sm-6">
+                                <h4>Temperature Chart</h4>
+                                <canvas id="chartTas" class="chart chart-line" chart-data="chartTasData"
+                                        chart-labels="chartTasLabels" chart-legend="true" chart-series="chartTasSeries"
+                                        chart-click="onChartTasClick" >
+                                </canvas> 
+                            </div>
+                            <div ng-show="showPr" class="col-sm-6">
+                                <h4>Precipitation Chart</h4>
+                                <canvas id="charPr" class="chart chart-line" chart-data="chartPrData"
+                                        chart-labels="chartPrLabels" chart-legend="true" chart-series="chartPrSeries"
+                                        chart-click="onPrClick" >
+                                </canvas> 
+                            </div>
+                        </div>
+                    </div>    
+                </div>
+            </div>
+        </div>        
+    </div>    
+</div>
