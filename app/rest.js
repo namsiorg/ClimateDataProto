@@ -2,8 +2,13 @@ angular.module('myApp.RestClientService', ['ngResource'])
         .factory('RestClientService', ['$q', '$resource', function ($q, $resource) {
                 var factory = {
                     query: function (params) {
-                        //http://climatedataapi.worldbank.org/climateweb/rest/v1/country/mavg/tas/1980/1999/USA.JSON  
-                        var url = "http://climatedataapi.worldbank.org/climateweb/rest/v1/country";
+                        /*******
+                         * 
+                         *Example: http://climatedataapi.worldbank.org/climateweb/rest/v1/country/mavg/tas/1980/1999/USA.JSON  
+                         *var url = "http://climatedataapi.worldbank.org/climateweb/rest/v1/country";
+                         * We are using proxy to avoid CORS
+                         *************/
+                        var url = "http://localhost:5000" 
                         url += "/" + params.type
                                 + "/" + params.var
                                 + "/" + params.start
