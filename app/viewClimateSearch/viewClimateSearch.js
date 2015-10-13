@@ -334,6 +334,20 @@ angular.module('myApp.viewClimateSearch', ['ngRoute', 'am.multiselect', 'trNgGri
                     reset();
                     getTempData();
                 };
+                
+                var query = function(params){
+                        RestClientService.query(params).then(function (response) {
+                            if (typeof response === "undefined" 
+                                    || typeof response.length === "undefined"){
+                                confirm("Error processing request");
+                            } else if(response.length < 1) { 
+                                confirm("No data returned. Check your search parameters and try again.");
+                            }
+                            else {
+                                popupWindow(response);
+                            }
+                        });
+                };
                 var getTempData = function () {
                     for (var i = 0; i < $scope.selectedCountry.length; i++) {
                         var countryCode = $scope.selectedCountry[i].substr(0, 3);
@@ -344,22 +358,7 @@ angular.module('myApp.viewClimateSearch', ['ngRoute', 'am.multiselect', 'trNgGri
                             end: $scope.toYear,
                             ISO3: countryCode
                         };
-                        RestClientService.query(params).then(function (response) {
-                            if (typeof response == "undefined" || response.length < 1) {
-                                /*
-                                 $scope.modalHeaderText = "Warning";
-                                 $scope.modalBodyText = "No data returned. Check your search parameters and try again.";
-                                 var modalInstance = $modal.open({
-                                 templateUrl: '/ClimateDataProto/components/gui/modal.tmpl.html',
-                                 controller: 'ModalInstanceCtrl'
-                                 });
-                                 */
-                                confirm("No data returned. Check your search parameters and try again.");
-                            }
-                            else {
-                                popupWindow(response);
-                            }
-                        });
+                        query(params);                    
                     }
                     ;
                 };
@@ -402,23 +401,7 @@ angular.module('myApp.viewClimateSearch', ['ngRoute', 'am.multiselect', 'trNgGri
                             end: $scope.toYear,
                             ISO3: countryCode
                         };
-                        RestClientService.query(params).then(function (response) {
-                            if (typeof response == "undefined" || response.length < 1) {
-                                /*
-                                 $scope.modalHeaderText = "Warning";
-                                 $scope.modalBodyText = "No data returned. Check your search parameters and try again.";
-                                 var modalInstance = $modal.open({
-                                 templateUrl: '/ClimateDataProto/components/gui/modal.tmpl.html',
-                                 controller: 'ModalInstanceCtrl'
-                                 });
-                                 */
-                                confirm("No data returned. Check your search parameters and try again.");
-                            }
-                            else {
-                                $scope.dataItems = [];
-                                popupWindow(response);
-                            }
-                        });
+                        query(params);
                     }
                     ;
                 };
